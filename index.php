@@ -65,13 +65,15 @@ function scan(string $directory, array &$paths, array $allowedMimes, RepositoryI
             continue;
         }
 
-        $mime = $mimeTypeRepository->findType(pathinfo($path, PATHINFO_EXTENSION));
+        $mimetype = $mimeTypeRepository->findType(pathinfo($path, PATHINFO_EXTENSION));
 
         foreach ($allowedMimes as $pattern) {
-            if (fnmatch($pattern, $mime)) {
+            if (fnmatch($pattern, $mimetype)) {
                 $paths[] = [
                     'path' => $path,
                     'timestamp' => filemtime($path),
+                    'size' => filesize($path),
+                    'mimetype' => $mimetype,
                 ];
                 break;
             }
@@ -104,8 +106,13 @@ foreach ($paths as $row) {
 
     $item = $channel->addChild('item');
     $item->addChild('title', $title);
-    $item->addChild('link', $link);
     $item->addChild('guid', $link);
+    $item->addChild('pubDate', date(DATE_RFC7231, $row['timestamp']));
+
+    $media = $item->addChild('enclosure');
+    $media->addAttribute('url', $link);
+    $media->addAttribute('length', $row['size']);
+    $media->addAttribute('type', $row['mimetype']);
 }
 
 Header('Content-type: text/xml');
