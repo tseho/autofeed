@@ -23,7 +23,7 @@ $resolver->setRequired([
 $resolver->setDefaults([
     'FEED_ROOT' => '/srv/files',
     'FEED_MIMES' => 'video/*, audio/*',
-    'FEED_MAX' => 200,
+    'FEED_MAX' => 50,
     'FEED_NAME' => 'AutoFeed RSS',
     'FEED_DESCRIPTION' => 'AutoFeed RSS',
     'FEED_BASE_URL' => function (Options $options) {
