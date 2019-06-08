@@ -27,7 +27,7 @@ $resolver->setDefaults([
     'FEED_NAME' => 'AutoFeed RSS',
     'FEED_DESCRIPTION' => 'AutoFeed RSS',
     'FEED_BASE_URL' => function (Options $options) {
-        return rtrim($options['FEED_URL'], '/').'/';
+        return $options['FEED_URL'];
     },
 ]);
 $resolver->setNormalizer('FEED_MIMES', function (Options $options, $value) {
@@ -35,6 +35,9 @@ $resolver->setNormalizer('FEED_MIMES', function (Options $options, $value) {
 });
 $resolver->setNormalizer('FEED_MAX', function (Options $options, $value) {
     return intval($value);
+});
+$resolver->setNormalizer('FEED_BASE_URL', function (Options $options, $value) {
+    return rtrim($value, '/').'/';
 });
 
 $options = [];
