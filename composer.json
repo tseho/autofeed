@@ -1,0 +1,5 @@
+{
+  "require": {
+    "symfony/options-resolver": "3.4.*"
+  }
+}

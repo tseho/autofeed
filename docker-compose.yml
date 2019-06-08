@@ -1,0 +1,21 @@
+version: '3'
+services:
+    nginx:
+        image: nginx:1.9
+        volumes:
+            - ./nginx.conf:/etc/nginx/conf.d/default.conf
+        # build: ./nginx/
+        depends_on:
+            - autofeed
+            # networks:
+            # - default
+        restart: unless-stopped
+    autofeed:
+        build: ./
+          # networks:
+        # - default
+        restart: unless-stopped
+
+# networks:
+#     default:
+#         driver: bridge
