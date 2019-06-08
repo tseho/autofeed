@@ -2,6 +2,8 @@
 
 require __DIR__.'/vendor/autoload.php';
 
+use Dflydev\ApacheMimeTypes\PhpRepository;
+use Dflydev\ApacheMimeTypes\RepositoryInterface;
 use Symfony\Component\OptionsResolver\Options;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -44,12 +46,8 @@ foreach ($resolver->getDefinedOptions() as $key) {
 
 $options = $resolver->resolve($options);
 
-function scan(string $directory, array &$paths, array $allowedMimes, int $max = 200)
+function scan(string $directory, array &$paths, array $allowedMimes, RepositoryInterface $mimeTypeRepository)
 {
-    if (count($paths) >= $max) {
-        return;
-    }
-
     $files = scandir($directory);
     foreach ($files as $filename) {
         if (in_array($filename, ['.', '..'])) {
@@ -63,15 +61,11 @@ function scan(string $directory, array &$paths, array $allowedMimes, int $max = 
         }
 
         if (is_dir($path)) {
-            scan($path, $paths, $allowedMimes, $max);
+            scan($path, $paths, $allowedMimes, $mimeTypeRepository);
             continue;
         }
 
-        if (count($paths) >= $max) {
-            return;
-        }
-
-        $mime = mime_content_type($path);
+        $mime = $mimeTypeRepository->findType(pathinfo($path, PATHINFO_EXTENSION));
 
         foreach ($allowedMimes as $pattern) {
             if (fnmatch($pattern, $mime)) {
@@ -87,13 +81,15 @@ function scan(string $directory, array &$paths, array $allowedMimes, int $max = 
 
 $paths = [];
 
-scan($options['FEED_ROOT'], $paths, $options['FEED_MIMES'], $options['FEED_MAX']);
+scan($options['FEED_ROOT'], $paths, $options['FEED_MIMES'], new PhpRepository());
 
 usort($paths, function ($a, $b) {
     $at = $a['timestamp'];
     $bt = $b['timestamp'];
     return $at == $bt ? 0 : ($at > $bt ? -1 : 1);
 });
+
+$paths = array_slice($paths, 0, $options['FEED_MAX']);
 
 $xml = new SimpleXMLElement('<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"/>');
 $channel = $xml->addChild('channel');

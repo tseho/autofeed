@@ -1,5 +1,6 @@
 {
   "require": {
-    "symfony/options-resolver": "3.4.*"
+    "symfony/options-resolver": "3.4.*",
+    "dflydev/apache-mime-types": "^1.0"
   }
 }
