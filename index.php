@@ -50,7 +50,7 @@ function scan(string $directory, array &$paths, array $allowedMimes, RepositoryI
 {
     $files = scandir($directory);
     foreach ($files as $filename) {
-        if (in_array($filename, ['.', '..'])) {
+        if (strpos($filename, '.') === 0) {
             continue;
         }
 
