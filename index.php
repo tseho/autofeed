@@ -108,8 +108,8 @@ foreach ($paths as $row) {
     $link = sprintf('%s%s', $options['FEED_BASE_URL'], $path);
 
     $item = $channel->addChild('item');
-    $item->addChild('title', $title);
-    $item->addChild('guid', $link);
+    $item->addChild('title', htmlspecialchars($title));
+    $item->addChild('guid', htmlspecialchars($link));
     $item->addChild('pubDate', date(DATE_RFC7231, $row['timestamp']));
 
     $media = $item->addChild('enclosure');
